@@ -1,0 +1,52 @@
+
+# Tengri DCMS Product Design Specification
+
+
+
+## Overview
+
+Tengri DCMS is a lightweight document control management system for document controllers, document control manager and enterprise IT security engineers.
+
+## Architecture
+
+Three layers from bottom to top:
+
+- Data stores: 
+  - PostgreSQL for storing metadata and audit records
+  - S3 or MinIO for storing file blobs
+  - Redis for storing queue and cache
+  - Elasticsearch for global text search
+- DCMS application:
+  - Web frontend, React driven, focus on registration, transmittals, workflows, and dashboard
+  - DCMS API enables CRUD of docs and metadata
+  - Workflow engine regulates the approvals and file distribution are strictly under control
+  - Notification handles emails and in-site messages such as alerts
+  - Audit log for operation trail
+- Clients
+  - Project members: users
+  - Document controllers: admin/maintainers
+  - External vendors: vendors
+
+![](C:\Users\Fengyan Han\OneDrive - Astratech\Desktop\Misc\dcms\dcms_architecture_overview.svg)
+
+## Functional Modules
+
+The functional modules are as follows:
+
+![](C:\Users\Fengyan Han\OneDrive - Astratech\Desktop\Misc\dcms\dcms_module_breakdown.svg)
+
+## ERD
+
+Refer to dcms_erd.html. 
+
+## Demo
+
+```
+tar -xzf dcms-mvp.tar.gz
+cd dcms-mvp
+docker compose up -d            # start Postgres and run migrate + seed
+cd backend && cp .env.example .env && npm install && npm run dev
+cd ../frontend && npm install && npm run dev
+# visit http://localhost:5173, log in via alice@example.com / password
+```
+

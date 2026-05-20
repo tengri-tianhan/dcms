@@ -1,0 +1,250 @@
+<style>
+.dcms { padding: 1rem 0; }
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); margin-bottom:14px; background:var(--color-background-primary); }
+.topbar-l { display:flex; align-items:center; gap:10px; font-weight:500; }
+.topbar-r { font-size:13px; color:var(--color-text-secondary); }
+.stats { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; margin-bottom:14px; }
+.stat { background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:12px 14px; }
+.stat-l { font-size:12px; color:var(--color-text-secondary); }
+.stat-v { font-size:22px; font-weight:500; margin-top:4px; }
+.stat-d { font-size:11px; color:var(--color-text-tertiary); margin-top:2px; }
+.filters { display:flex; gap:8px; margin-bottom:10px; align-items:center; flex-wrap:wrap; }
+.filters input, .filters select { font-size:13px; }
+.table-wrap { background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); overflow:hidden; }
+.t-table { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+.t-table th { text-align:left; padding:10px 14px; background:var(--color-background-secondary); font-weight:500; color:var(--color-text-secondary); font-size:12px; border-bottom:0.5px solid var(--color-border-tertiary); }
+.t-table td { padding:11px 14px; border-top:0.5px solid var(--color-border-tertiary); vertical-align:middle; }
+.t-table tbody tr { cursor:pointer; }
+.t-table tbody tr:hover { background:var(--color-background-secondary); }
+.row-expanded { background:var(--color-background-secondary); }
+.badge { display:inline-block; padding:2px 9px; border-radius:12px; font-size:11px; font-weight:500; }
+.b-draft { background:#F1EFE8; color:#5F5E5A; }
+.b-review { background:#FAEEDA; color:#854F0B; }
+.b-approved { background:#EAF3DE; color:#3B6D11; }
+.b-issued { background:#E6F1FB; color:#0C447C; }
+.b-overdue { background:#FCEBEB; color:#791F1F; margin-left:4px; }
+.code-cell { font-family:var(--font-mono); font-size:12px; color:var(--color-text-secondary); }
+.detail { padding:14px 14px 16px; background:var(--color-background-secondary); border-top:0.5px solid var(--color-border-tertiary); font-size:13px; }
+.detail h4 { margin:0 0 8px; font-size:13px; font-weight:500; color:var(--color-text-secondary); }
+.detail-row { display:flex; justify-content:space-between; padding:5px 0; border-top:0.5px solid var(--color-border-tertiary); }
+.detail-row:first-of-type { border-top:none; }
+.detail-actions { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+.btn { padding:5px 12px; font-size:12px; border-radius:var(--border-radius-md); cursor:pointer; border:0.5px solid var(--color-border-secondary); background:transparent; color:var(--color-text-primary); }
+.btn:hover { background:var(--color-background-secondary); }
+.btn-pri { background:var(--color-text-info); color:white; border-color:var(--color-text-info); }
+.btn-pri:hover { opacity:.9; background:var(--color-text-info); }
+.modal-bg { background:rgba(0,0,0,.45); padding:24px; margin:14px 0; border-radius:var(--border-radius-lg); min-height:260px; display:none; align-items:center; justify-content:center; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--color-background-primary); border-radius:var(--border-radius-lg); padding:18px 20px; width:100%; max-width:460px; }
+.modal h3 { margin:0 0 14px; font-size:15px; font-weight:500; }
+.m-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px; }
+.m-row label { flex:0 0 88px; color:var(--color-text-secondary); }
+.m-row input, .m-row select, .m-row textarea { flex:1; font-size:13px; }
+.m-row textarea { resize:vertical; min-height:54px; font-family:var(--font-sans); padding:8px 10px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); background:var(--color-background-primary); color:var(--color-text-primary); }
+.m-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:14px; }
+.recipients-list { background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:6px 10px; max-height:90px; overflow-y:auto; }
+.recipient-pill { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; margin:3px 4px 3px 0; background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:12px; font-size:12px; }
+.recipient-pill .x { cursor:pointer; color:var(--color-text-secondary); }
+.notice { background:#E1F5EE; color:#085041; padding:10px 12px; border-radius:var(--border-radius-md); font-size:13px; margin-bottom:14px; display:none; align-items:center; gap:8px; }
+.notice.show { display:flex; }
+</style>
+<div class="dcms">
+  <div class="topbar">
+    <div class="topbar-l">
+      <i class="ti ti-folder" aria-hidden="true" style="font-size:20px"></i>
+      <span>DCMS</span>
+      <span style="color:var(--color-text-tertiary); font-size:13px">/ Bridge-PJ-2026</span>
+    </div>
+    <div class="topbar-r">Document controller · 24601</div>
+  </div>
+  <div id="notice" class="notice"><i class="ti ti-check" aria-hidden="true" style="font-size:16px"></i><span id="notice-text"></span></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-l">In review</div><div class="stat-v">8</div><div class="stat-d">2 overdue</div></div>
+    <div class="stat"><div class="stat-l">Pending ack.</div><div class="stat-v" id="s-pending">14</div><div class="stat-d">3 overdue</div></div>
+    <div class="stat"><div class="stat-l">Issued this week</div><div class="stat-v">23</div><div class="stat-d">+18% vs last</div></div>
+    <div class="stat"><div class="stat-l">Total controlled</div><div class="stat-v">487</div><div class="stat-d">6 disciplines</div></div>
+  </div>
+  <div class="filters">
+    <input type="text" id="search" placeholder="Search code or title…" style="flex:1; min-width:160px"/>
+    <select id="f-disc">
+      <option value="">All disciplines</option>
+      <option>ARC</option><option>STR</option><option>MEP</option><option>CIV</option>
+    </select>
+    <select id="f-status">
+      <option value="">All statuses</option>
+      <option>Draft</option><option>In review</option><option>Approved</option><option>Issued</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table class="t-table">
+      <thead>
+        <tr>
+          <th style="width:46%">Document</th>
+          <th style="width:9%">Rev</th>
+          <th style="width:11%">Disc.</th>
+          <th style="width:20%">Status</th>
+          <th style="width:14%">Updated</th>
+        </tr>
+      </thead>
+      <tbody id="doc-rows"></tbody>
+    </table>
+  </div>
+  <div id="modal" class="modal-bg">
+    <div class="modal">
+      <h3>Create transmittal</h3>
+      <div class="m-row"><label>Document</label><span id="m-doc" class="code-cell" style="color:var(--color-text-primary); font-weight:500"></span></div>
+      <div class="m-row"><label>Purpose</label>
+        <select id="m-purpose">
+          <option>For information</option>
+          <option>For review</option>
+          <option>For approval</option>
+          <option>For construction</option>
+        </select>
+      </div>
+      <div class="m-row" style="align-items:flex-start"><label>Recipients</label>
+        <div style="flex:1">
+          <div class="recipients-list" id="m-recipients"></div>
+          <select id="m-add-recipient" style="width:100%; margin-top:6px">
+            <option value="">+ add recipient</option>
+            <option value="Site team">Site team</option>
+            <option value="Vendor – Acme">Vendor – Acme</option>
+            <option value="Vendor – Bridge Co.">Vendor – Bridge Co.</option>
+            <option value="Owner rep">Owner rep</option>
+            <option value="QA / QC">QA / QC</option>
+          </select>
+        </div>
+      </div>
+      <div class="m-row" style="align-items:flex-start"><label>Note</label><textarea placeholder="Optional cover note…"></textarea></div>
+      <div class="m-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-pri" onclick="confirmTransmittal()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const docs = [
+  { code:'BR26-ARC-DWG-001', title:'Architectural floor plan, level 1', rev:'B', disc:'ARC', status:'Issued', updated:'2 days ago' },
+  { code:'BR26-STR-CAL-014', title:'Beam load calculation, span 12m', rev:'A', disc:'STR', status:'In review', updated:'5 hours ago', overdue:true },
+  { code:'BR26-MEP-DWG-022', title:'HVAC riser diagram', rev:'C', disc:'MEP', status:'Approved', updated:'yesterday' },
+  { code:'BR26-CIV-RPT-007', title:'Soil investigation report', rev:'0', disc:'CIV', status:'Draft', updated:'3 hours ago' },
+  { code:'BR26-ARC-DWG-018', title:'Façade detail at north entrance', rev:'A', disc:'ARC', status:'In review', updated:'1 day ago' },
+  { code:'BR26-MEP-SPC-003', title:'Chiller equipment specification', rev:'B', disc:'MEP', status:'Issued', updated:'1 week ago' },
+  { code:'BR26-STR-DWG-031', title:'Column reinforcement schedule', rev:'A', disc:'STR', status:'Approved', updated:'4 days ago' },
+];
+const versions = {
+  'BR26-STR-CAL-014': [
+    { rev:'A', date:'May 16', author:'Liu Jie', status:'In review (John Smith)' },
+    { rev:'0', date:'May 2', author:'Liu Jie', status:'Superseded' },
+  ],
+  'BR26-MEP-DWG-022': [
+    { rev:'C', date:'May 18', author:'Wang Lin', status:'Approved, awaiting issue' },
+    { rev:'B', date:'May 4', author:'Wang Lin', status:'Superseded' },
+    { rev:'A', date:'Apr 15', author:'Wang Lin', status:'Superseded' },
+  ],
+  'BR26-ARC-DWG-001': [
+    { rev:'B', date:'May 18', author:'Chen Yu', status:'Issued for construction' },
+  ],
+};
+const ackStatus = {
+  'BR26-ARC-DWG-001': { sent:5, ack:4, overdue:0 },
+  'BR26-MEP-SPC-003': { sent:8, ack:5, overdue:3 },
+};
+function badgeClass(s) {
+  return { 'Draft':'b-draft', 'In review':'b-review', 'Approved':'b-approved', 'Issued':'b-issued' }[s] || 'b-draft';
+}
+function render() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const fd = document.getElementById('f-disc').value;
+  const fs = document.getElementById('f-status').value;
+  const tbody = document.getElementById('doc-rows');
+  tbody.innerHTML = '';
+  const filtered = docs.filter(d =>
+    (d.code.toLowerCase().includes(q) || d.title.toLowerCase().includes(q)) &&
+    (!fd || d.disc === fd) &&
+    (!fs || d.status === fs)
+  );
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--color-text-secondary)">No documents match the filters.</td></tr>';
+    return;
+  }
+  filtered.forEach(d => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><div class="code-cell" style="color:var(--color-text-primary); font-weight:500">${d.code}</div>
+          <div style="color:var(--color-text-secondary); font-size:12px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${d.title}</div></td>
+      <td><span class="code-cell">${d.rev}</span></td>
+      <td>${d.disc}</td>
+      <td><span class="badge ${badgeClass(d.status)}">${d.status}</span>${d.overdue ? '<span class="badge b-overdue">overdue</span>' : ''}</td>
+      <td style="color:var(--color-text-secondary)">${d.updated}</td>`;
+    tr.onclick = () => toggleDetail(tr, d);
+    tbody.appendChild(tr);
+  });
+}
+function toggleDetail(tr, d) {
+  const next = tr.nextElementSibling;
+  if (next && next.classList.contains('detail-row-tr')) {
+    next.remove();
+    tr.classList.remove('row-expanded');
+    return;
+  }
+  document.querySelectorAll('.detail-row-tr').forEach(n => n.remove());
+  document.querySelectorAll('.row-expanded').forEach(n => n.classList.remove('row-expanded'));
+  tr.classList.add('row-expanded');
+  const detail = document.createElement('tr');
+  detail.classList.add('detail-row-tr');
+  const vList = versions[d.code] || [{ rev:d.rev, date:d.updated, author:'—', status:d.status }];
+  const ack = ackStatus[d.code];
+  detail.innerHTML = `
+    <td colspan="5" class="detail">
+      <h4>Version history</h4>
+      ${vList.map(v => `<div class="detail-row"><span><span class="code-cell">Rev ${v.rev}</span> · ${v.date} · ${v.author}</span><span style="color:var(--color-text-secondary)">${v.status}</span></div>`).join('')}
+      ${ack ? `<h4 style="margin-top:14px">Distribution status</h4>
+        <div class="detail-row"><span>Sent to ${ack.sent} recipients</span><span style="color:var(--color-text-secondary)">${ack.ack} acknowledged${ack.overdue ? ', '+ack.overdue+' overdue' : ''}</span></div>` : ''}
+      <div class="detail-actions">
+        <button class="btn btn-pri" onclick="event.stopPropagation(); openModal('${d.code}')"><i class="ti ti-send" aria-hidden="true" style="font-size:13px; vertical-align:-1px; margin-right:4px"></i>Send transmittal</button>
+        <button class="btn" onclick="event.stopPropagation(); sendPrompt('Show me the full audit trail for ${d.code}')">View audit trail ↗</button>
+        <button class="btn" onclick="event.stopPropagation(); sendPrompt('Open a new revision of ${d.code}')">New revision ↗</button>
+      </div>
+    </td>`;
+  tr.parentNode.insertBefore(detail, tr.nextSibling);
+}
+let recipients = ['Site team'];
+function renderRecipients() {
+  const box = document.getElementById('m-recipients');
+  if (!recipients.length) {
+    box.innerHTML = '<span style="color:var(--color-text-secondary); font-size:12px">No recipients yet — add below</span>';
+    return;
+  }
+  box.innerHTML = recipients.map((r, i) => `<span class="recipient-pill">${r}<span class="x" onclick="removeRecipient(${i})">×</span></span>`).join('');
+}
+function removeRecipient(i) { recipients.splice(i, 1); renderRecipients(); }
+function openModal(code) {
+  document.getElementById('m-doc').textContent = code;
+  recipients = ['Site team'];
+  renderRecipients();
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function confirmTransmittal() {
+  const code = document.getElementById('m-doc').textContent;
+  closeModal();
+  const n = document.getElementById('notice');
+  document.getElementById('notice-text').textContent = `Transmittal created for ${code} → ${recipients.length} recipient(s). Acknowledgment tracking started.`;
+  n.classList.add('show');
+  const p = document.getElementById('s-pending');
+  p.textContent = String(parseInt(p.textContent, 10) + recipients.length);
+  setTimeout(() => n.classList.remove('show'), 6000);
+}
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('f-disc').addEventListener('change', render);
+document.getElementById('f-status').addEventListener('change', render);
+document.getElementById('m-add-recipient').addEventListener('change', e => {
+  if (e.target.value && !recipients.includes(e.target.value)) {
+    recipients.push(e.target.value);
+    renderRecipients();
+  }
+  e.target.value = '';
+});
+render();
+</script>
