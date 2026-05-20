@@ -114,9 +114,9 @@ See `dcms-schema-and-api.md` (in the parent directory) for the full REST contrac
 - `GET  /api/v1/transmittals/:id`
 - `POST /api/v1/transmittals/:id/recipients/:rid/acknowledge`
 
-## What to add next
+## What's next
 
-In priority order if you want to evolve this toward production:
+In priority order, the following components are listed in the bucket for production:
 
 1. **Workflow engine** — replace the manual `POST /versions/:vid/transition` with workflow instances + steps, so reviewers get assigned tasks instead of buttons that anyone can click.
 2. **Distribution matrix** — when sending a transmittal, suggest recipients from the (discipline, doc_type, purpose) rules instead of making the sender pick from scratch.
